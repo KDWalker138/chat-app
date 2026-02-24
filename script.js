@@ -74,19 +74,27 @@ async function loadMessages() {
   data.forEach(msg => {
     const bubble = document.createElement("div");
     bubble.classList.add("msg");
+    bubble.classList.add(msg.sender === user.email ? "me" : "other");
 
-    if (msg.sender === user.email) bubble.classList.add("me");
-
+    // TEXT OR MEDIA
     if (msg.media_url) {
-      // media message
-      const link = document.createElement("a");
-      link.href = getPublicMediaURL(msg.media_url);
-      link.target = "_blank";
-      link.textContent = "🖼 File";
-      bubble.appendChild(link);
-    } else {
-      bubble.textContent = msg.content;
+      const img = document.createElement("img");
+      img.src = getPublicMediaURL(msg.media_url);
+      img.onclick = () => window.open(img.src, "_blank");
+      bubble.appendChild(img);
     }
+
+    if (msg.content) {
+      const textNode = document.createElement("span");
+      textNode.textContent = msg.content;
+      bubble.appendChild(textNode);
+    }
+
+    // TIMESTAMP
+    const ts = document.createElement("span");
+    ts.classList.add("timestamp");
+    ts.textContent = new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute:'2-digit' });
+    bubble.appendChild(ts);
 
     messagesDiv.appendChild(bubble);
   });
@@ -164,4 +172,5 @@ supabase
 
 darkToggle.onclick = () => {
   document.body.classList.toggle("dark");
+
 };
