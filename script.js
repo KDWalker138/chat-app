@@ -1,11 +1,10 @@
-// CHANGE THESE
-const SUPABASE_URL = "https://kcnigiqauxkzutnscsyh.supabase.co";
-const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtjbmlnaXFhdXhrenV0bnNjc3loIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE5MjYyNTYsImV4cCI6MjA4NzUwMjI1Nn0.DwOwkIPWqyeLKDzn8sFGHtsyf9jObxTEJMcZmUh12Qs";
+// --- CONFIG ---
+const SUPABASE_URL = "https://kcnigiqauxkzutnscsyh.supabase.co"; const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtjbmlnaXFhdXhrenV0bnNjc3loIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE5MjYyNTYsImV4cCI6MjA4NzUwMjI1Nn0.DwOwkIPWqyeLKDzn8sFGHtsyf9jObxTEJMcZmUh12Qs";
 
-// OLD: const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+// Use unique variable name to avoid conflicts
 const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-// DOM
+// --- DOM ELEMENTS ---
 const loginScreen = document.getElementById("login-screen");
 const chatScreen = document.getElementById("chat-screen");
 const emailInput = document.getElementById("email-input");
@@ -18,12 +17,12 @@ const fileInput = document.getElementById("file-input");
 const darkToggle = document.getElementById("dark-toggle");
 const messagesContainer = document.getElementById("messages-container");
 
-// LOGIN
+// --- LOGIN ---
 loginBtn.onclick = async () => {
   const email = emailInput.value.trim();
   if (!email) return alert("Enter email");
 
-  const { data: allowed } = await supabase
+  const { data: allowed } = await supabaseClient
     .from("allowed_users")
     .select("email")
     .eq("email", email);
@@ -33,13 +32,13 @@ loginBtn.onclick = async () => {
     return;
   }
 
-  const { error } = await supabase.auth.signInWithOtp({ email });
+  const { error } = await supabaseClient.auth.signInWithOtp({ email });
   if (error) alert("Login failed");
   else alert("Check your email for login link!");
 };
 
-// SHOW CHAT AFTER LOGIN
-supabase.auth.onAuthStateChange(async (event, session) => {
+// --- SHOW CHAT AFTER LOGIN ---
+supabaseClient.auth.onAuthStateChange(async (event, session) => {
   if (session) {
     loginScreen.classList.add("hidden");
     chatScreen.classList.remove("hidden");
@@ -47,15 +46,15 @@ supabase.auth.onAuthStateChange(async (event, session) => {
   }
 });
 
-// LOAD MESSAGES
+// --- LOAD MESSAGES ---
 async function loadMessages() {
-  const { data } = await supabase
+  const { data } = await supabaseClient
     .from("messages")
     .select("*")
     .order("created_at", { ascending: true });
 
   messagesDiv.innerHTML = "";
-  const user = (await supabase.auth.getUser()).data.user;
+  const user = (await supabaseClient.auth.getUser()).data.user;
 
   data.forEach(msg => {
     const bubble = document.createElement("div");
@@ -87,38 +86,37 @@ async function loadMessages() {
   messagesContainer.scrollTop = messagesContainer.scrollHeight;
 }
 
-// SEND TEXT
+// --- SEND TEXT ---
 sendBtn.onclick = async () => {
   const txt = msgInput.value.trim();
   if (!txt) return;
-  const user = (await supabase.auth.getUser()).data.user;
-  await supabase.from("messages").insert({ sender: user.email, content: txt });
+  const user = (await supabaseClient.auth.getUser()).data.user;
+  await supabaseClient.from("messages").insert({ sender: user.email, content: txt });
   msgInput.value = "";
 };
 
-// SEND MEDIA
+// --- SEND MEDIA ---
 fileBtn.onclick = () => fileInput.click();
 fileInput.onchange = async () => {
   const file = fileInput.files[0];
   if (!file) return;
-  const user = (await supabase.auth.getUser()).data.user;
+  const user = (await supabaseClient.auth.getUser()).data.user;
   const filePath = `${user.email}/${Date.now()}-${file.name}`;
 
-  const { data, error } = await supabase.storage.from("media").upload(filePath, file);
-  if (!error) await supabase.from("messages").insert({ sender: user.email, media_url: data.path });
+  const { data, error } = await supabaseClient.storage.from("media").upload(filePath, file);
+  if (!error) await supabaseClient.from("messages").insert({ sender: user.email, media_url: data.path });
   fileInput.value = "";
 };
 
-// MEDIA URL
+// --- GET MEDIA URL ---
 function getPublicMediaURL(path) {
   return `${SUPABASE_URL}/storage/v1/object/public/media/${path}`;
 }
 
-// REALTIME
-supabase.channel("realtime:messages")
+// --- REALTIME ---
+supabaseClient.channel("realtime:messages")
   .on("postgres_changes", { event:"*", schema:"public", table:"messages" }, () => loadMessages())
   .subscribe();
 
-// DARK MODE
+// --- DARK MODE ---
 darkToggle.onclick = () => document.body.classList.toggle("dark");
-
