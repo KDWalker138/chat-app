@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Private Chat</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+
+<div id="app">
+
+  <!-- LOGIN SECTION -->
+  <div id="login-screen" class="screen">
+    <h2>Secure Login</h2>
+    <input id="email-input" type="email" placeholder="Enter your email" />
+    <button id="login-btn">Login</button>
+  </div>
+
+  <!-- CHAT SECTION -->
+  <div id="chat-screen" class="screen hidden">
+    
+    <header>
+      <h3>Private Chat</h3>
+      <button id="dark-toggle">🌙</button>
+    </header>
+
+    <div id="messages"></div>
+
+    <div id="send-box">
+      <input id="msg-input" type="text" placeholder="Type your message..." />
+      <button id="send-btn">Send</button>
+
+      <input id="file-input" type="file" hidden />
+      <button id="file-btn">📎</button>
+    </div>
+
+  </div>
+
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
