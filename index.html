@@ -11,14 +11,14 @@
 
 <div id="app">
 
-  <!-- LOGIN SECTION -->
+  <!-- LOGIN SCREEN -->
   <div id="login-screen" class="screen">
     <h2>Secure Login</h2>
     <input id="email-input" type="email" placeholder="Enter your email" />
     <button id="login-btn">Login</button>
   </div>
 
-  <!-- CHAT SECTION -->
+  <!-- CHAT SCREEN -->
   <div id="chat-screen" class="screen hidden">
     
     <header>
@@ -26,7 +26,9 @@
       <button id="dark-toggle">🌙</button>
     </header>
 
-    <div id="messages"></div>
+    <div id="messages-container">
+      <div id="messages"></div>
+    </div>
 
     <div id="send-box">
       <input id="msg-input" type="text" placeholder="Type your message..." />
