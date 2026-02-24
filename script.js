@@ -2,7 +2,8 @@
 const SUPABASE_URL = "https://kcnigiqauxkzutnscsyh.supabase.co";
 const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtjbmlnaXFhdXhrenV0bnNjc3loIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE5MjYyNTYsImV4cCI6MjA4NzUwMjI1Nn0.DwOwkIPWqyeLKDzn8sFGHtsyf9jObxTEJMcZmUh12Qs";
 
-const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+// OLD: const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 // DOM
 const loginScreen = document.getElementById("login-screen");
@@ -120,3 +121,4 @@ supabase.channel("realtime:messages")
 
 // DARK MODE
 darkToggle.onclick = () => document.body.classList.toggle("dark");
+
